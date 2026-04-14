@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Paulo Marques / Desenvolvedor</title>
+
+  <style>
+    body {
+      color: white;
+      font-family: Arial;
+      text-align: center;
+    }
+    body {
+  background: linear-gradient(135deg, #0f172a, #020617);
+    }
+    h1 {
+      font-size: 32px;
+      margin-top: 20px;
+    }
+    h2 {
+      color: #38bdf8;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+    p {
+  color: #cbd5f5;
+    }
+
+    .foto {
+  width: 150px;
+  border-radius: 50%;
+  margin-top: 20px;
+  transition: 0.3s;
+  }
+  
+  .foto {
+  width: 150px;
+  border-radius: 50%;
+  margin-top: 20px;
+  transition: 0.3s;
+  }
+  @keyframes flutuar {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.foto {
+  width: 150px;
+  border-radius: 50%;
+  margin-top: 20px;
+  animation: flutuar 3s infinite;
+}
+
+.foto:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #38bdf8;
+}
+
+.foto:hover {
+  transform: scale(1.1);
+}
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  }
+  .foto {
+  width: 150px;
+  border-radius: 50%;
+  margin-top: 20px;
+  transition: 0.3s;
+  border: 3px solid #38bdf8;
+  }
+  body {
+  background: linear-gradient(270deg, #0f172a, #020617, #0f172a);
+  background-size: 600% 600%;
+  animation: fundoAnimado 10s ease infinite;
+}
+
+@keyframes fundoAnimado {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.foto:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px #38bdf8;
+  }
+  
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  }
+
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    
+    .card.show {
+  opacity: 1;
+  transform: translateY(0);
+  }
+
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card {
+  background: #1e293b;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 10px;
+  transition: 0.3s;
+  animation: aparecer 1s ease;
+  }
+
+    button {
+      padding: 10px;
+      border: none;
+      background: #38bdf8;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+    }
+    a {
+    text-decoration: none;
+    color: #38bdf8;
+    display: block;
+    margin: 5px 0;
+    transition: 0.3s;
+    }
+    button:active {
+  transform: scale(0.95);
+    }
+    a:hover {
+  color: #0ea5e9;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin: 5px 0;
+    }
+    footer {
+  margin-top: 30px;
+  padding: 10px;
+  font-size: 14px;
+  color: #94a3b8;
+}
+#admin {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  width: 250px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px black;
+}
+#painel input, #painel textarea {
+  width: 100%;
+  margin: 5px 0;
+  padding: 6px;
+  border-radius: 5px;
+  border: none;
+}
+
+#login {
+  display: flex;
+}
+  </style>
+</head>
+
+<body>
+  <!-- LOGIN -->
+<div id="login" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000a; justify-content:center; align-items:center;">
+  <div style="background:#111; padding:20px; border-radius:10px;">
+    <h2>Login Admin 🔐</h2>
+    <input type="password" id="senha" placeholder="Digite a senha"><br><br>
+    <button onclick="logar()">Entrar</button>
+  </div>
+</div>
+
+<!-- PAINEL -->
+<div id="painel" style="display:none; position:fixed; top:0; left:0; width:250px; height:100%; background:#020617; padding:20px;">
+  <h2>Admin ⚙️</h2>
+
+  <h3>Nome</h3>
+  <input type="text" id="inputNome">
+  <button onclick="editarNome()">Salvar</button>
+
+  <h3>Sobre</h3>
+  <textarea id="inputSobre"></textarea>
+  <button onclick="editarSobre()">Salvar</button>
+
+  <br><br>
+  <button onclick="logout()">Sair</button>
+</div>
+
+<!-- BOTÃO -->
+<button onclick="abrirLogin()" style="position:fixed; bottom:10px; right:10px; opacity:0.3;">
+⚙️
+</button> 
+  <button onclick="abrirAdmin()" style="position:fixed; bottom:10px; right:10px; opacity:0.2;">
+    ⚙️
+  </button>
+   <div id="admin" style="display:none; background:#111; padding:20px; margin-top:20px;">
+  <h2>Painel Admin</h2>
+  <p>Bem-vindo, Paulo 👨‍💻</p>
+
+  <h3>Editar Nome</h3>
+  <input type="text" id="inputNome" placeholder="Novo nome">
+  <button onclick="editarNome()">Salvar Nome</button>
+
+  <h3>Editar Sobre</h3>
+  <textarea id="inputSobre" placeholder="Novo sobre"></textarea>
+  <button onclick="editarSobre()">Salvar Sobre</button>
+</div>
+  
+  
+  <div class="container">
+  
+  </div>
+   <script>
+    function abrirAdmin() {
+      let senha = prompt("Digite a senha:");
+
+      if (senha === "316270") {
+        document.getElementById("admin").style.display = "block";
+      } else {
+        alert("Acesso negado!");
+      }
+    }
+
+    window.addEventListener('scroll', () => {
+      cards.forEach(card => {
+        const cardTop = card.getBoundingClientRect().top;
+
+        if (cardTop < window.innerHeight - 50) {
+          card.classList.add('show');
+        }
+      });
+    });
+  </script>
+
+
+  <div class="container">
+    <h1 id="nome">Paulo Marques</h1>
+
+  <p id="sobre-texto">
+  Estudante de Análise e Modelagem de Sistemas, com foco em desenvolvimento web e criação de soluções práticas utilizando programação.
+  </p>
+    
+    <!--FOTO-->
+    <img src="foto.jpg.jpg" class="foto">
+    
+    <!--SOBRE-->
+    <div class="card">
+      <h2>Sobre Mim</h2>
+      <p>Estudante de Análise e Modelagem de Sistemas, com foco em desenvolvimento web e criação de soluções práticas utilizando programação.</p>
+    </div>
+    
+    <!--PROJETOS-->
+    <div class="card">
+      <h2>Projetos</h2>
+      <ul>
+        <li>✔ Calculadora em JavaScript</li>
+        <li>✔ Site pessoal (este)</li>
+      </ul>
+      <p>Em breve</p>
+    </div>
+    
+    <!--HABILIDADES-->
+    <div class="card">
+      <h2>Habilidades</h2>
+      <p>HTML, CSS, JavaScript</p>
+    </div>
+    
+    <!-- REDES -->
+    <div class="card">
+      <h2>Redes</h2>
+      <a href="https://github.com/paulomarques3162-pixel" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/paulo-marques-6149033a1/" target="_blank">LinkedIn</a>
+    </div>
+    
+    <!--CONTATO REAL-->
+    <a href="https://wa.me/5519989534466" target="_blank">
+    <button>Contato</button>
+    
+    </a>
+    <!-- RODAPÉ -->
+    <footer>
+      © 2026 Paulo Marques - Todos os direitos reservados
+    </footer>
+  
+  </div>
+<script>
+ function abrirAdmin() {
+    let senha = prompt("Digite a senha:");
+    if (senha === "316270") {
+      document.getElementById("admin").style.display = "block";
+    } else {
+      alert("Acesso negado!");
+    }
+  }
+
+  function editarNome() {
+    let novoNome = document.getElementById("inputNome").value;
+    document.getElementById("nome").innerText = novoNome;
+    localStorage.setItem("nome", novoNome);
+  }
+
+  function editarSobre() {
+    let novoSobre = document.getElementById("inputSobre").value;
+    document.getElementById("sobre-texto").innerText = novoSobre;
+    localStorage.setItem("sobre", novoSobre);
+  }
+
+  window.onload = function () {
+    let nomeSalvo = localStorage.getItem("nome");
+    let sobreSalvo = localStorage.getItem("sobre");
+
+    if (nomeSalvo) document.getElementById("nome").innerText = nomeSalvo;
+    if (sobreSalvo) document.getElementById("sobre-texto").innerText = sobreSalvo;
+
+    // 🔥 SCROLL ANIMAÇÃO (CORRETO)
+    const cards = document.querySelectorAll('.card');
+
+    window.addEventListener('scroll', () => {
+      cards.forEach(card => {
+        const top = card.getBoundingClientRect().top;
+
+        if (top < window.innerHeight - 50) {
+          card.classList.add('show');
+        }
+      });
+    });
+  };
+</script>
+</body>
+</html>
