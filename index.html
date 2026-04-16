@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Paulo Marques | Portfolio</title>
 
-  <!-- Fonte -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -23,12 +22,6 @@
       font-family: 'Inter', sans-serif;
       background: radial-gradient(circle at top right, #1e293b, #020617);
       min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    body.luz-acesa {
-      background: radial-gradient(circle at top right, #bae6fd, #f8fafc);
-      color: #0f172a;
     }
 
     .container {
@@ -38,7 +31,6 @@
       text-align: center;
     }
 
-    /* FOTO COM EFEITO AVANÇADO */
     .foto {
       width: 160px;
       height: 160px;
@@ -46,12 +38,6 @@
       border: 3px solid var(--accent);
       object-fit: cover;
       animation: float 4s ease-in-out infinite;
-      transition: 0.4s;
-    }
-
-    .foto:hover {
-      transform: scale(1.05) rotate(1deg);
-      box-shadow: 0 0 40px rgba(56, 189, 248, 0.6);
     }
 
     @keyframes float {
@@ -60,11 +46,10 @@
     }
 
     h1 {
-      font-size: 2.8rem;
+      font-size: 2.5rem;
       margin-top: 20px;
     }
 
-    /* TEXTO COM ANIMAÇÃO */
     .typing {
       border-right: 2px solid var(--accent);
       white-space: nowrap;
@@ -81,7 +66,6 @@
       50% { border-color: transparent; }
     }
 
-    /* CARDS */
     .card {
       background: var(--card-bg);
       backdrop-filter: blur(15px);
@@ -89,18 +73,11 @@
       margin: 25px 0;
       border-radius: 20px;
       border: 1px solid rgba(255,255,255,0.08);
-      opacity: 0;
-      transform: translateY(50px) scale(0.95);
-      transition: all 0.7s ease;
-    }
-
-    .card.show {
-      opacity: 1;
-      transform: translateY(0) scale(1);
+      transition: 0.4s;
     }
 
     .card:hover {
-      transform: translateY(-8px) scale(1.02);
+      transform: translateY(-5px);
       border-color: var(--accent);
     }
 
@@ -109,26 +86,73 @@
       margin-bottom: 10px;
     }
 
-    /* BOTÃO TOP */
-    .btn-luz {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      border: none;
-      background: var(--accent);
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 18px;
+    /* 🔥 PROJETO */
+    .projeto-card {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
       transition: 0.3s;
     }
 
-    .btn-luz:hover {
-      transform: scale(1.1) rotate(20deg);
+    .projeto-card:hover {
+      transform: scale(1.02);
+      border: 1px solid #38bdf8;
     }
 
-    /* BOTÃO PRINCIPAL */
+    .preview {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 120px;
+      margin-bottom: 15px;
+    }
+
+    .grafico-bar {
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(to top, #38bdf8 20%, transparent 20%),
+                  linear-gradient(to top, #0ea5e9 40%, transparent 40%),
+                  linear-gradient(to top, #0284c7 60%, transparent 60%);
+      background-size: 20% 100%;
+      background-repeat: no-repeat;
+      background-position: 0%, 30%, 60%;
+    }
+
+    .grafico-pie {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #38bdf8 0% 40%,
+        #0ea5e9 40% 70%,
+        #0284c7 70% 100%
+      );
+    }
+
+    .btn-projeto {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #38bdf8;
+      color: #000;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .btn-projeto:hover {
+      background: #0ea5e9;
+      transform: translateY(-2px);
+    }
+
+    .social-links a {
+      margin: 0 10px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
     .btn-contato {
       display: inline-block;
       padding: 15px 35px;
@@ -138,39 +162,6 @@
       font-weight: bold;
       text-decoration: none;
       margin-top: 30px;
-      transition: 0.4s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* efeito ripple */
-    .btn-contato::after {
-      content: "";
-      position: absolute;
-      width: 0;
-      height: 0;
-      background: rgba(255,255,255,0.4);
-      border-radius: 50%;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      transition: 0.5s;
-    }
-
-    .btn-contato:hover::after {
-      width: 300px;
-      height: 300px;
-    }
-
-    .btn-contato:hover {
-      transform: translateY(-5px);
-    }
-
-    .social-links a {
-      margin: 0 10px;
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 500;
     }
 
     footer {
@@ -178,12 +169,11 @@
       font-size: 0.8rem;
       opacity: 0.6;
     }
+
   </style>
 </head>
 
 <body>
-
-<button class="btn-luz" onclick="toggleLuz()">💡</button>
 
 <div class="container">
 
@@ -202,20 +192,26 @@
     <p>HTML • CSS • JavaScript • Git • UI/UX</p>
   </div>
 
+  <!-- 🔥 PROJETOS COM PREVIEW -->
   <div class="card">
     <h2>📂 Projetos</h2>
 
-<p><strong>📊 Dashboard de Vendas</strong></p>
-<p>Dashboard interativo com gráficos dinâmicos e filtros por região.</p>
+    <div class="projeto-card">
+      
+      <div class="preview">
+        <div class="grafico-bar"></div>
+        <div class="grafico-pie"></div>
+      </div>
 
-<a href="https://paulomarques3162-pixel.github.io/dashboard-vendas/" target="_blank">
-  🔗 Ver Projeto
-</a>
+      <h3>Dashboard de Vendas</h3>
+      <p>Análise interativa de vendas por região e produto.</p>
 
-<br><br>
+      <a href="dashboard-vendas/index.html" class="btn-projeto">
+        Ver Dashboard →
+      </a>
 
-<p>• Sistema em Python</p>
-<p>• Sites responsivos</p>
+    </div>
+
   </div>
 
   <div class="card">
@@ -231,27 +227,10 @@
   </a>
 
   <footer>
-   © 2026 PAULO MARQUES · DESIGNED BY CODE
+    © 2026 PAULO MARQUES
   </footer>
 
 </div>
-
-<script>
-function toggleLuz() {
-  document.body.classList.toggle('luz-acesa');
-}
-
-// animação scroll
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('show');
-    }
-  });
-}, { threshold: 0.2 });
-
-document.querySelectorAll('.card').forEach(card => observer.observe(card));
-</script>
 
 </body>
 </html>
