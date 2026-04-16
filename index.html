@@ -3,169 +3,246 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Paulo Marques | Dev</title>
+  <title>Paulo Marques | Portfolio</title>
+
+  <!-- Fonte -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <style>
-    /* 1. RESET E BASE */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
+    :root {
+      --bg-dark: #020617;
+      --card-bg: rgba(30, 41, 59, 0.6);
+      --accent: #38bdf8;
+      --text: #f8fafc;
+    }
+
     body {
-      color: white;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      text-align: center;
-      background: linear-gradient(270deg, #0f172a, #020617, #0f172a);
-      background-size: 400% 400%;
-      animation: fundoAnimado 15s ease infinite;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top right, #1e293b, #020617);
+      min-height: 100vh;
       overflow-x: hidden;
     }
 
-    @keyframes fundoAnimado {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    body.luz-acesa {
+      background: radial-gradient(circle at top right, #bae6fd, #f8fafc);
+      color: #0f172a;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 750px;
       margin: auto;
-      padding: 40px 20px;
+      padding: 60px 20px;
+      text-align: center;
     }
 
-    /* 2. TIPOGRAFIA */
-    h1 { font-size: 2.5rem; margin-top: 10px; }
-    h2 { color: #38bdf8; margin-bottom: 10px; }
-    p { color: #cbd5e1; line-height: 1.6; }
-
-    /* 3. FOTO COM ANIMAÇÃO */
+    /* FOTO COM EFEITO AVANÇADO */
     .foto {
-      width: 150px;
-      height: 150px;
+      width: 160px;
+      height: 160px;
       border-radius: 50%;
-      margin: 20px 0;
-      border: 3px solid #38bdf8;
+      border: 3px solid var(--accent);
       object-fit: cover;
-      animation: flutuar 3s infinite ease-in-out;
-      transition: 0.3s;
+      animation: float 4s ease-in-out infinite;
+      transition: 0.4s;
     }
 
     .foto:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 20px #38bdf8;
+      transform: scale(1.05) rotate(1deg);
+      box-shadow: 0 0 40px rgba(56, 189, 248, 0.6);
     }
 
-    @keyframes flutuar {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
     }
 
-    /* 4. CARDS COM EFEITO DE ENTRADA */
+    h1 {
+      font-size: 2.8rem;
+      margin-top: 20px;
+    }
+
+    /* TEXTO COM ANIMAÇÃO */
+    .typing {
+      border-right: 2px solid var(--accent);
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+      animation: typing 3s steps(30) forwards, blink .6s infinite;
+    }
+
+    @keyframes typing {
+      to { width: 100%; }
+    }
+
+    @keyframes blink {
+      50% { border-color: transparent; }
+    }
+
+    /* CARDS */
     .card {
-      background: #1e293b;
-      padding: 25px;
-      margin: 20px 0;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      background: var(--card-bg);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      margin: 25px 0;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
       opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.6s ease-out;
+      transform: translateY(50px) scale(0.95);
+      transition: all 0.7s ease;
     }
 
     .card.show {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
 
-    /* 5. BOTÕES E LINKS */
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--accent);
+    }
+
+    h2 {
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    /* BOTÃO TOP */
+    .btn-luz {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      border: none;
+      background: var(--accent);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      transition: 0.3s;
+    }
+
+    .btn-luz:hover {
+      transform: scale(1.1) rotate(20deg);
+    }
+
+    /* BOTÃO PRINCIPAL */
     .btn-contato {
       display: inline-block;
-      padding: 12px 30px;
-      background: #38bdf8;
-      color: #0f172a;
+      padding: 15px 35px;
+      background: var(--accent);
+      border-radius: 40px;
+      color: #000;
       font-weight: bold;
       text-decoration: none;
-      border-radius: 8px;
-      transition: 0.3s;
-      margin-top: 20px;
+      margin-top: 30px;
+      transition: 0.4s;
+      position: relative;
+      overflow: hidden;
     }
 
-    .btn-contato:hover { 
-      background: #0ea5e9; 
-      transform: scale(1.05); 
+    /* efeito ripple */
+    .btn-contato::after {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.4);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: 0.5s;
     }
 
-    .social-links a { 
-      text-decoration: none; 
-      color: #38bdf8; 
-      display: inline-block; 
-      margin: 10px; 
-      transition: 0.3s; 
+    .btn-contato:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-contato:hover {
+      transform: translateY(-5px);
+    }
+
+    .social-links a {
+      margin: 0 10px;
+      color: var(--accent);
+      text-decoration: none;
       font-weight: 500;
     }
-    
-    .social-links a:hover { color: #fff; }
 
-    ul { list-style: none; }
-    li { margin: 8px 0; color: #cbd5e1; }
-
-    footer { margin-top: 50px; color: #64748b; font-size: 0.9rem; padding-bottom: 20px; }
+    footer {
+      margin-top: 60px;
+      font-size: 0.8rem;
+      opacity: 0.6;
+    }
   </style>
 </head>
+
 <body>
 
-  <div class="container">
-    <h1>Paulo Marques</h1>
-    <p>Estudante de Análise e Modelagem de Sistemas</p>
-    
-    <img src="foto.jpg.jpg" class="foto" alt="Foto de Paulo">
+<button class="btn-luz" onclick="toggleLuz()">💡</button>
 
-    <div class="card">
-      <h2>Sobre Mim</h2>
-      <p>Estudante focado em desenvolvimento web e criação de soluções práticas utilizando programação. Atualmente explorando o ecossistema de Front-end.</p>
-    </div>
+<div class="container">
 
-    <div class="card">
-      <h2>Projetos</h2>
-      <ul>
-        <li>🚀 Calculadora em JavaScript</li>
-        <li>🌐 Site pessoal / Portfólio</li>
-        <li>🛠️ Em breve novos projetos...</li>
-      </ul>
-    </div>
+  <img src="foto.jpg.jpg" class="foto">
 
-    <div class="card">
-      <h2>Habilidades</h2>
-      <p>HTML5, CSS3, JavaScript (ES6+), Git & GitHub</p>
-    </div>
+  <h1>Paulo Marques</h1>
+  <p class="typing">Desenvolvedor focado em interfaces modernas</p>
 
-    <div class="card">
-      <h2>Redes Sociais</h2>
-      <div class="social-links">
-        <a href="https://github.com" target="_blank">GitHub</a>
-        <a href="https://linkedin.com" target="_blank">LinkedIn</a>
-      </div>
-    </div>
-
-    <a href="https://wa.me" target="_blank" class="btn-contato">
-      Falar no WhatsApp
-    </a>
-
-    <footer>
-      © 2026 Paulo Marques - Todos os direitos reservados
-    </footer>
+  <div class="card">
+    <h2>🚀 Sobre Mim</h2>
+    <p>Crio experiências digitais modernas com foco em performance, design e clareza.</p>
   </div>
 
-  <script>
-    // Animação suave ao scroll usando Intersection Observer
-    window.onload = () => {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('show');
-          }
-        });
-      }, { threshold: 0.1 });
+  <div class="card">
+    <h2>🛠️ Tecnologias</h2>
+    <p>HTML • CSS • JavaScript • Git • UI/UX</p>
+  </div>
 
-      document.querySelectorAll('.card').forEach(card => observer.observe(card));
-    };
-  </script>
+  <div class="card">
+    <h2>📂 Projetos</h2>
+    <p>• Dashboard de dados</p>
+    <p>• Sistema em Python</p>
+    <p>• Sites responsivos</p>
+  </div>
+
+  <div class="card">
+    <h2>📫 Contato</h2>
+    <div class="social-links">
+      <a href="https://github.com/SEU-USUARIO">GitHub</a>
+      <a href="https://linkedin.com/in/SEU_PERFIL">LinkedIn</a>
+    </div>
+  </div>
+
+  <a href="https://wa.me/55SEUNUMERO" class="btn-contato">
+    VAMOS CONVERSAR
+  </a>
+
+  <footer>
+    © 2026 PAULO MARQUES
+  </footer>
+
+</div>
+
+<script>
+function toggleLuz() {
+  document.body.classList.toggle('luz-acesa');
+}
+
+// animação scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('show');
+    }
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('.card').forEach(card => observer.observe(card));
+</script>
+
 </body>
 </html>
