@@ -1,0 +1,199 @@
+index.html
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Vendas</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 { text-align: center; margin-bottom: 10px; }
+
+    .voltar {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    select {
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      background: #1e293b;
+      color: white;
+    }
+
+    .kpi {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
+    .chart-container {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 20px;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas {
+      max-width: 100%;
+      max-height: 100%;
+      background: white;
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+<a href="https://paulomarques3162-pixel.github.io/meu-site/" class="voltar">
+
+</a>
+
+<h1>📊 Dashboard de Vendas</h1>
+
+<div style="text-align:center;">
+  <label>Filtrar por Região:</label><br>
+  <select id="filtro">
+    <option value="Todos">Todos</option>
+    <option value="Norte">Norte</option>
+    <option value="Sul">Sul</option>
+    <option value="Leste">Leste</option>
+    <option value="Oeste">Oeste</option>
+  </select>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Total de Vendas</h2>
+    <p id="total" class="kpi">R$ 0</p>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="chart-container">
+        <canvas id="graficoProduto"></canvas>
+      </div>
+  </div>
+  <div class="card">
+    <div class="chart-container">
+        <canvas id="graficoRegiao"></canvas>
+      </div>
+  </div>
+</div>
+
+<script>
+const dados = [
+  { produto: "Monitor", regiao: "Norte", total: 3000 },
+  { produto: "Teclado", regiao: "Sul", total: 1500 },
+  { produto: "Mouse", regiao: "Leste", total: 800 },
+  { produto: "Notebook", regiao: "Oeste", total: 5000 },
+  { produto: "Headset", regiao: "Norte", total: 1200 }
+];
+
+let grafico1, grafico2;
+
+function atualizarDashboard() {
+  const filtro = document.getElementById("filtro").value;
+
+  const filtrados = filtro === "Todos"
+    ? dados
+    : dados.filter(d => d.regiao === filtro);
+
+  const total = filtrados.reduce((soma, item) => soma + item.total, 0);
+
+  document.getElementById("total").innerText = total.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
+
+  const porProduto = {};
+  filtrados.forEach(d => {
+    porProduto[d.produto] = (porProduto[d.produto] || 0) + d.total;
+  });
+
+  const porRegiao = {};
+  filtrados.forEach(d => {
+    porRegiao[d.regiao] = (porRegiao[d.regiao] || 0) + d.total;
+  });
+
+  if (grafico1) grafico1.destroy();
+  if (grafico2) grafico2.destroy();
+
+  grafico1 = new Chart(document.getElementById("graficoProduto"), {
+    type: "bar",
+    data: {
+      labels: Object.keys(porProduto),
+      datasets: [{
+        label: "Vendas por Produto",
+        data: Object.values(porProduto),
+        borderRadius: 6
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+
+  grafico2 = new Chart(document.getElementById("graficoRegiao"), {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(porRegiao),
+      datasets: [{
+        data: Object.values(porRegiao)
+      }]
+    }
+  });
+}
+
+document.getElementById("filtro").addEventListener("change", atualizarDashboard);
+
+atualizarDashboard();
+</script>
+
+</body>
+</html>
