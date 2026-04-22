@@ -944,6 +944,13 @@
   <i class="fa-solid fa-circle-check"></i>
   Mensagem enviada com sucesso!
 </div>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<script>
+  (function(){
+    emailjs.init("Ia0WmlhkegczD3JkN");
+  })();
+</script>
 
 <script>
   /* ── CURSOR GLOW ── */
@@ -1049,18 +1056,37 @@
   });
 
   /* ── FORM ── */
-  function sendForm() {
-    const name = document.getElementById('inp-name').value.trim();
-    const email = document.getElementById('inp-email').value.trim();
-    const msg  = document.getElementById('inp-msg').value.trim();
-    if (!name || !email || !msg) { alert('Preencha todos os campos!'); return; }
-    document.getElementById('inp-name').value = '';
-    document.getElementById('inp-email').value = '';
-    document.getElementById('inp-msg').value = '';
-    const toast = document.getElementById('toast');
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3500);
+ function sendForm() {
+  const name = document.getElementById('inp-name').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const msg = document.getElementById('inp-msg').value.trim();
+
+  if (!name || !email || !msg) {
+    alert('Preencha todos os campos!');
+    return;
   }
+
+  const params = {
+    from_name: name,
+    from_email: email,
+    message: msg
+  };
+
+  emailjs.send("service_tcx51ht", "template_lf6jsb5", params)
+    .then(() => {
+      document.getElementById('inp-name').value = '';
+      document.getElementById('inp-email').value = '';
+      document.getElementById('inp-msg').value = '';
+
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    })
+    .catch((error) => {
+      alert("Erro ao enviar mensagem");
+      console.error(error);
+    });
+}
 </script>
 </body>
 </html>
