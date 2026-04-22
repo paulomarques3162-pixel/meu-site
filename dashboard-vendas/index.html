@@ -4,229 +4,572 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard de Vendas</title>
-
+  <title>Dashboard de Vendas · Paulo Marques</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <style>
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-dark:  #020617;
+      --bg-mid:   #0f172a;
+      --card-bg:  rgba(15, 23, 42, 0.75);
+      --accent:   #38bdf8;
+      --accent2:  #818cf8;
+      --accent3:  #34d399;
+      --accent4:  #fb923c;
+      --text:     #f8fafc;
+      --muted:    #94a3b8;
+      --border:   rgba(255,255,255,0.07);
+    }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', Arial, sans-serif;
-      background: linear-gradient(135deg, #020617, #0f172a);
-      color: white;
-      margin: 0;
-      padding: 20px;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    h1 { text-align: center; margin-bottom: 5px; }
-
-    .subtitle {
-      text-align: center;
-      opacity: 0.7;
-      margin-bottom: 20px;
+    /* PARTICLES */
+    #particles-canvas {
+      position: fixed; inset: 0;
+      z-index: 0; pointer-events: none;
     }
 
-    /* 🔥 BOTÃO VOLTAR */
-    .voltar {
+    /* CURSOR GLOW */
+    .cursor-glow {
       position: fixed;
-      top: 20px;
-      left: 20px;
-      background: rgba(56, 189, 248, 0.1);
-      padding: 10px 15px;
+      width: 380px; height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56,189,248,.06) 0%, transparent 70%);
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: left .12s ease, top .12s ease;
+      z-index: 1;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 48px;
+      background: rgba(2,6,23,.75);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 1.1rem; font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-title {
+      font-size: .85rem; color: var(--muted); font-weight: 500;
+    }
+    .btn-voltar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 20px;
+      border: 1.5px solid var(--border);
+      border-radius: 50px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: .8rem; font-weight: 600;
+      transition: .3s;
+    }
+    .btn-voltar:hover {
+      border-color: var(--accent);
+      background: rgba(56,189,248,.08);
+      transform: translateX(-3px);
+    }
+
+    /* WRAPPER */
+    .wrapper {
+      position: relative; z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 110px 24px 60px;
+    }
+
+    /* HERO HEADER */
+    .dash-header {
+      display: flex; align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap; gap: 20px;
+      margin-bottom: 36px;
+    }
+    .dash-header-left { }
+    .section-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border: 1px solid rgba(56,189,248,.3);
+      border-radius: 20px;
+      font-size: .7rem; font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: rgba(56,189,248,.05);
+      margin-bottom: 10px;
+    }
+    .dash-header h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+    .dash-header h1 span {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .dash-header p { color: var(--muted); font-size: .875rem; margin-top: 6px; }
+
+    /* FILTER */
+    .filter-wrap {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .filter-label { font-size: .78rem; color: var(--muted); font-weight: 600; letter-spacing: .5px; }
+    .filter-select {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      transition: .3s;
+      backdrop-filter: blur(12px);
+    }
+    .filter-select:focus { border-color: var(--accent); }
+    .filter-select option { background: #0f172a; }
+
+    /* KPI ROW */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    /* GLASS CARD */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 24px;
+      transition: .35s;
+      position: relative;
+      overflow: hidden;
+    }
+    .glass-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0; transition: .35s;
+    }
+    .glass-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(56,189,248,.25);
+      box-shadow: 0 20px 50px rgba(0,0,0,.5);
+    }
+    .glass-card:hover::before { opacity: 1; }
+
+    /* KPI CARD */
+    .kpi-card .kpi-icon {
+      width: 40px; height: 40px;
       border-radius: 10px;
-      backdrop-filter: blur(10px);
-      color: #38bdf8;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+    }
+    .kpi-card .kpi-label {
+      font-size: .72rem; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .kpi-card .kpi-value {
+      font-size: 1.65rem; font-weight: 800;
+      letter-spacing: -.5px;
+      line-height: 1;
+    }
+    .kpi-card .kpi-sub {
+      font-size: .75rem; color: var(--muted);
+      margin-top: 6px; display: flex; align-items: center; gap: 4px;
+    }
+    .kpi-card .kpi-sub .up { color: var(--accent3); }
+    .kpi-card .kpi-sub .down { color: #f87171; }
+
+    /* CHART GRID */
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .chart-grid-bottom {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .chart-title {
+      font-size: .9rem; font-weight: 700;
+      margin-bottom: 4px; color: var(--text);
+    }
+    .chart-subtitle {
+      font-size: .75rem; color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .chart-box {
+      height: 240px; position: relative;
+    }
+
+    /* TABLE */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: .7rem; font-weight: 700; letter-spacing: .8px;
+      text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr { transition: .2s; }
+    tbody tr:hover { background: rgba(255,255,255,.03); }
+    tbody td { padding: 12px 14px; color: var(--text); border-bottom: 1px solid var(--border); }
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 20px; font-size: .7rem; font-weight: 600;
+    }
+    .badge-blue  { background: rgba(56,189,248,.12); color: var(--accent); }
+    .badge-purple{ background: rgba(129,140,248,.12); color: var(--accent2); }
+    .badge-green { background: rgba(52,211,153,.12);  color: var(--accent3); }
+    .badge-orange{ background: rgba(251,146,60,.12);  color: var(--accent4); }
+
+    /* PROGRESS BAR */
+    .progress-list { display: flex; flex-direction: column; gap: 14px; }
+    .progress-item { }
+    .progress-header {
+      display: flex; justify-content: space-between;
+      font-size: .8rem; color: var(--muted); margin-bottom: 6px;
+    }
+    .progress-header span:last-child { color: var(--text); font-weight: 600; }
+    .progress-track {
+      height: 6px; background: rgba(255,255,255,.06);
+      border-radius: 99px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 99px;
+      transition: width 1s ease;
+    }
+
+    /* FOOTER */
+    .dash-footer {
+      text-align: center;
+      margin-top: 48px;
+      font-size: .75rem;
+      color: var(--muted);
+    }
+    .dash-footer a {
+      color: var(--accent);
       text-decoration: none;
       font-weight: 600;
-      transition: 0.3s;
     }
 
-    .voltar:hover {
-      background: rgba(56, 189, 248, 0.2);
-      transform: translateY(-2px);
+    @media(max-width:700px){
+      nav { padding: 14px 20px; }
+      .nav-title { display: none; }
+      .chart-grid, .chart-grid-bottom { grid-template-columns: 1fr; }
+      .wrapper { padding-top: 90px; }
     }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .card {
-      background: rgba(30, 41, 59, 0.8);
-      backdrop-filter: blur(10px);
-      padding: 20px;
-      border-radius: 16px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      transition: 0.3s;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-    }
-
-    select {
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 10px;
-      border: none;
-      background: #1e293b;
-      color: white;
-    }
-
-    .kpi {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #38bdf8;
-    }
-
-    .chart-container {
-      background: rgba(255,255,255,0.05);
-      border-radius: 16px;
-      padding: 20px;
-      height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    canvas {
-      max-width: 100%;
-      max-height: 100%;
-      background: white;
-      border-radius: 12px;
-      padding: 10px;
-    }
-
   </style>
 </head>
 <body>
 
-<!-- 🔥 BOTÃO VOLTAR -->
-<a href="https://paulomarques3162-pixel.github.io/meu-site/" class="voltar">
-  ← Voltar
-</a>
+<canvas id="particles-canvas"></canvas>
+<div class="cursor-glow" id="cursorGlow"></div>
 
-<h1>📊 Dashboard de Vendas</h1>
-<p class="subtitle">Dashboard interativo para análise de vendas em tempo real</p>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">PM</div>
+  <span class="nav-title"><i class="fa-solid fa-chart-column" style="color:var(--accent);margin-right:6px"></i>Dashboard de Vendas</span>
+  <a href="index.html" class="btn-voltar">
+    <i class="fa-solid fa-arrow-left"></i> Portfólio
+  </a>
+</nav>
 
-<div style="text-align:center;">
-  <label>Filtrar por Região:</label><br>
-  <select id="filtro">
-    <option value="Todos">Todos</option>
-    <option value="Norte">Norte</option>
-    <option value="Sul">Sul</option>
-    <option value="Leste">Leste</option>
-    <option value="Oeste">Oeste</option>
-  </select>
-</div>
+<div class="wrapper">
 
-<div class="grid">
-  <div class="card">
-    <h2>Total de Vendas</h2>
-    <p id="total" class="kpi">R$ 0</p>
-  </div>
-</div>
-
-<div class="grid">
-  <div class="card">
-    <div class="chart-container">
-      <canvas id="graficoProduto"></canvas>
+  <!-- HEADER -->
+  <div class="dash-header">
+    <div class="dash-header-left">
+      <div class="section-tag">✦ Analytics</div>
+      <h1>Dashboard de <span>Vendas</span></h1>
+      <p>Análise interativa de vendas por região e produto · Atualizado em tempo real</p>
+    </div>
+    <div class="filter-wrap">
+      <span class="filter-label">REGIÃO</span>
+      <select class="filter-select" id="filtro">
+        <option value="Todos">Todas as Regiões</option>
+        <option value="Norte">Norte</option>
+        <option value="Sul">Sul</option>
+        <option value="Leste">Leste</option>
+        <option value="Oeste">Oeste</option>
+      </select>
     </div>
   </div>
 
-  <div class="card">
-    <div class="chart-container">
-      <canvas id="graficoRegiao"></canvas>
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="glass-card kpi-card">
+      <div class="kpi-icon" style="background:rgba(56,189,248,.1);color:var(--accent)">
+        <i class="fa-solid fa-dollar-sign"></i>
+      </div>
+      <div class="kpi-label">Total de Vendas</div>
+      <div class="kpi-value" id="kpi-total" style="color:var(--accent)">R$ 0</div>
+      <div class="kpi-sub"><i class="fa-solid fa-arrow-trend-up up"></i><span class="up">+12% este mês</span></div>
+    </div>
+    <div class="glass-card kpi-card">
+      <div class="kpi-icon" style="background:rgba(129,140,248,.1);color:var(--accent2)">
+        <i class="fa-solid fa-box"></i>
+      </div>
+      <div class="kpi-label">Produtos</div>
+      <div class="kpi-value" id="kpi-produtos" style="color:var(--accent2)">0</div>
+      <div class="kpi-sub"><span class="up">itens no filtro</span></div>
+    </div>
+    <div class="glass-card kpi-card">
+      <div class="kpi-icon" style="background:rgba(52,211,153,.1);color:var(--accent3)">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+      <div class="kpi-label">Maior Venda</div>
+      <div class="kpi-value" id="kpi-maior" style="color:var(--accent3)">R$ 0</div>
+      <div class="kpi-sub"><span id="kpi-maior-nome" style="color:var(--muted)">—</span></div>
+    </div>
+    <div class="glass-card kpi-card">
+      <div class="kpi-icon" style="background:rgba(251,146,60,.1);color:var(--accent4)">
+        <i class="fa-solid fa-map-location-dot"></i>
+      </div>
+      <div class="kpi-label">Regiões Ativas</div>
+      <div class="kpi-value" id="kpi-regioes" style="color:var(--accent4)">0</div>
+      <div class="kpi-sub"><span style="color:var(--muted)">regiões no filtro</span></div>
     </div>
   </div>
+
+  <!-- CHARTS ROW 1 -->
+  <div class="chart-grid">
+    <div class="glass-card">
+      <div class="chart-title">Vendas por Produto</div>
+      <div class="chart-subtitle">Comparativo de faturamento por item</div>
+      <div class="chart-box"><canvas id="graficoProduto"></canvas></div>
+    </div>
+    <div class="glass-card">
+      <div class="chart-title">Distribuição por Região</div>
+      <div class="chart-subtitle">Participação percentual</div>
+      <div class="chart-box"><canvas id="graficoRegiao"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 2 -->
+  <div class="chart-grid-bottom">
+    <div class="glass-card">
+      <div class="chart-title">Ranking de Produtos</div>
+      <div class="chart-subtitle">Desempenho relativo ao maior</div>
+      <div class="progress-list" id="rankingList"></div>
+    </div>
+    <div class="glass-card">
+      <div class="chart-title">Detalhamento</div>
+      <div class="chart-subtitle">Tabela completa de registros</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Região</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="dash-footer">
+    Desenvolvido por <a href="index.html">Paulo Marques</a> · 2026
+  </div>
+
 </div>
 
 <script>
-const dados = [
-  { produto: "Monitor", regiao: "Norte", total: 3000 },
-  { produto: "Teclado", regiao: "Sul", total: 1500 },
-  { produto: "Mouse", regiao: "Leste", total: 800 },
-  { produto: "Notebook", regiao: "Oeste", total: 5000 },
-  { produto: "Headset", regiao: "Norte", total: 1200 }
-];
-
-let grafico1, grafico2;
-
-function atualizarDashboard() {
-  const filtro = document.getElementById("filtro").value;
-
-  const filtrados = filtro === "Todos"
-    ? dados
-    : dados.filter(d => d.regiao === filtro);
-
-  const total = filtrados.reduce((soma, item) => soma + item.total, 0);
-
-  document.getElementById("total").innerText = total.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL"
+  /* CURSOR */
+  const glow = document.getElementById('cursorGlow');
+  document.addEventListener('mousemove', e => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top  = e.clientY + 'px';
   });
 
-  const porProduto = {};
-  filtrados.forEach(d => {
-    porProduto[d.produto] = (porProduto[d.produto] || 0) + d.total;
-  });
+  /* PARTICLES */
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  class Particle {
+    constructor(){ this.reset(); }
+    reset(){ this.x=Math.random()*W; this.y=Math.random()*H; this.r=Math.random()*1.3+.3; this.vx=(Math.random()-.5)*.4; this.vy=(Math.random()-.5)*.4; this.alpha=Math.random()*.4+.1; }
+    update(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset(); }
+    draw(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle=`rgba(56,189,248,${this.alpha})`; ctx.fill(); }
+  }
+  for(let i=0;i<80;i++) particles.push(new Particle());
+  (function loop(){
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p=>{ p.update(); p.draw(); });
+    for(let i=0;i<particles.length;i++) for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<100){ ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y); ctx.strokeStyle=`rgba(56,189,248,${.07*(1-d/100)})`; ctx.lineWidth=.5; ctx.stroke(); }
+    }
+    requestAnimationFrame(loop);
+  })();
 
-  const porRegiao = {};
-  filtrados.forEach(d => {
-    porRegiao[d.regiao] = (porRegiao[d.regiao] || 0) + d.total;
-  });
+  /* DATA */
+  const dados = [
+    { produto: "Monitor",  regiao: "Norte", total: 3000 },
+    { produto: "Teclado",  regiao: "Sul",   total: 1500 },
+    { produto: "Mouse",    regiao: "Leste", total: 800  },
+    { produto: "Notebook", regiao: "Oeste", total: 5000 },
+    { produto: "Headset",  regiao: "Norte", total: 1200 }
+  ];
 
-  if (grafico1) grafico1.destroy();
-  if (grafico2) grafico2.destroy();
+  const cores = ['#38bdf8','#818cf8','#34d399','#fb923c','#f472b6'];
+  const badges = ['badge-blue','badge-purple','badge-green','badge-orange','badge-blue'];
+  const regiaoClass = { Norte:'badge-blue', Sul:'badge-green', Leste:'badge-purple', Oeste:'badge-orange' };
 
-  grafico1 = new Chart(document.getElementById("graficoProduto"), {
-    type: "bar",
-    data: {
-      labels: Object.keys(porProduto),
-      datasets: [{
-        data: Object.values(porProduto),
-        borderRadius: 8,
-        backgroundColor: [
-          "#38bdf8",
-          "#0ea5e9",
-          "#0284c7",
-          "#0369a1",
-          "#075985"
-        ]
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { display: false }
+  let g1, g2;
+
+  const fmt = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+
+  function animCount(el, target, prefix='', isFloat=true){
+    let start = 0;
+    const dur = 900, step = 16;
+    const inc = target / (dur / step);
+    const timer = setInterval(()=>{
+      start = Math.min(start + inc, target);
+      el.textContent = isFloat
+        ? start.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})
+        : Math.round(start);
+      if(start >= target) clearInterval(timer);
+    }, step);
+  }
+
+  function atualizar(){
+    const filtro = document.getElementById('filtro').value;
+    const filtrados = filtro==='Todos' ? dados : dados.filter(d=>d.regiao===filtro);
+
+    /* KPIs */
+    const total = filtrados.reduce((s,d)=>s+d.total, 0);
+    const maior = filtrados.reduce((m,d)=>d.total>m.total?d:m, {total:0,produto:'—'});
+    const regioes = [...new Set(filtrados.map(d=>d.regiao))].length;
+
+    animCount(document.getElementById('kpi-total'), total);
+    animCount(document.getElementById('kpi-produtos'), filtrados.length, '', false);
+    animCount(document.getElementById('kpi-maior'), maior.total);
+    animCount(document.getElementById('kpi-regioes'), regioes, '', false);
+    document.getElementById('kpi-maior-nome').textContent = maior.produto;
+
+    /* Group */
+    const porProduto = {}, porRegiao = {};
+    filtrados.forEach(d=>{
+      porProduto[d.produto] = (porProduto[d.produto]||0) + d.total;
+      porRegiao[d.regiao]   = (porRegiao[d.regiao]  ||0) + d.total;
+    });
+
+    /* Bar Chart */
+    if(g1) g1.destroy();
+    g1 = new Chart(document.getElementById('graficoProduto'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(porProduto),
+        datasets:[{
+          data: Object.values(porProduto),
+          backgroundColor: cores,
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options:{
+        responsive: true, maintainAspectRatio: false,
+        plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label: c => fmt(c.raw) } } },
+        scales:{
+          x:{ grid:{ color:'rgba(255,255,255,.05)' }, ticks:{ color:'#94a3b8', font:{family:'Inter',size:11} } },
+          y:{ grid:{ color:'rgba(255,255,255,.05)' }, ticks:{ color:'#94a3b8', font:{family:'Inter',size:11}, callback: v=>fmt(v) }, border:{dash:[4,4]} }
+        }
       }
-    }
-  });
+    });
 
-  grafico2 = new Chart(document.getElementById("graficoRegiao"), {
-    type: "doughnut",
-    data: {
-      labels: Object.keys(porRegiao),
-      datasets: [{
-        data: Object.values(porRegiao),
-        backgroundColor: [
-          "#38bdf8",
-          "#0ea5e9",
-          "#0284c7",
-          "#0369a1"
-        ]
-      }]
-    }
-  });
-}
+    /* Donut Chart */
+    if(g2) g2.destroy();
+    g2 = new Chart(document.getElementById('graficoRegiao'), {
+      type: 'doughnut',
+      data:{
+        labels: Object.keys(porRegiao),
+        datasets:[{ data: Object.values(porRegiao), backgroundColor: cores, borderWidth:0, hoverOffset:10 }]
+      },
+      options:{
+        responsive: true, maintainAspectRatio: false,
+        cutout: '68%',
+        plugins:{
+          legend:{ position:'bottom', labels:{ color:'#94a3b8', font:{family:'Inter',size:11}, padding:16, boxWidth:10, borderRadius:4 } },
+          tooltip:{ callbacks:{ label: c => ` ${c.label}: ${fmt(c.raw)}` } }
+        }
+      }
+    });
 
-document.getElementById("filtro").addEventListener("change", atualizarDashboard);
+    /* Ranking Bars */
+    const maxVal = Math.max(...Object.values(porProduto), 1);
+    const gradients = [
+      'linear-gradient(90deg,#38bdf8,#818cf8)',
+      'linear-gradient(90deg,#818cf8,#34d399)',
+      'linear-gradient(90deg,#34d399,#38bdf8)',
+      'linear-gradient(90deg,#fb923c,#f472b6)',
+      'linear-gradient(90deg,#38bdf8,#34d399)',
+    ];
+    const rl = document.getElementById('rankingList');
+    rl.innerHTML = Object.entries(porProduto)
+      .sort((a,b)=>b[1]-a[1])
+      .map(([prod,val],i)=>`
+        <div class="progress-item">
+          <div class="progress-header">
+            <span>${prod}</span>
+            <span>${fmt(val)}</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width:${(val/maxVal)*100}%;background:${gradients[i%gradients.length]}"></div>
+          </div>
+        </div>
+      `).join('');
 
-atualizarDashboard();
+    /* Table */
+    const tb = document.getElementById('tabelaBody');
+    tb.innerHTML = filtrados.map(d=>`
+      <tr>
+        <td>${d.produto}</td>
+        <td><span class="badge ${regiaoClass[d.regiao]||'badge-blue'}">${d.regiao}</span></td>
+        <td style="font-weight:700;color:var(--accent)">${fmt(d.total)}</td>
+      </tr>
+    `).join('');
+  }
+
+  document.getElementById('filtro').addEventListener('change', atualizar);
+  atualizar();
 </script>
-
 </body>
 </html>
