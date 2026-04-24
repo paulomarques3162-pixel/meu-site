@@ -703,9 +703,21 @@ function showToastStore(msg){
 }
 function subscribeNL(){
   const inp=document.getElementById('nlEmail');
-  if(!inp.value||!inp.value.includes('@')){showToastStore('⚠️ Digite um e-mail válido!');return;}
-  showToastStore('📬 E-mail cadastrado com sucesso!');
-  inp.value='';
+  const email=inp.value.trim();
+  if(!email||!email.includes('@')){showToastStore('⚠️ Digite um e-mail válido!');return;}
+  
+  // Enviar email via EmailJS
+  emailjs.send("service_tcx51ht","template_lf6jsb5",{
+    from_name:"Newsletter",
+    from_email:email,
+    message:`Olá! Você foi inscrito em nossa newsletter. A partir de agora receberá as melhores ofertas e promoções exclusivas da TechStore. Obrigado!`
+  }).then(()=>{
+    showToastStore('📬 Inscrição confirmada! Você receberá nossas ofertas no seu email.');
+    inp.value='';
+  }).catch(err=>{
+    showToastStore('⚠️ Erro ao processar inscrição. Tente novamente!');
+    console.error(err);
+  });
 }
 </script>
 </body>
