@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -6,18 +7,26 @@
   <title>Sistema Industrial — Paulo Marques</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #050d1a;
-      --card:    #0a1628;
-      --border:  rgba(103,232,249,.15);
-      --accent:  #67e8f9;
-      --accent2: #0e7490;
-      --text:    #e2e8f0;
-      --muted:   #64748b;
+      --bg:      #020617;
+      --surface: #0a1628;
+      --card:    rgba(15, 23, 42, 0.85);
+      --accent:  #38bdf8;
+      --accent2: #818cf8;
+      --accent3: #34d399;
+      --warning: #fbbf24;
+      --danger:  #f43f5e;
+      --text:    #f8fafc;
+      --muted:   #94a3b8;
+      --border:  rgba(255,255,255,0.07);
+      --border-accent: rgba(56,189,248,0.2);
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
@@ -27,513 +36,910 @@
       overflow-x: hidden;
     }
 
+    /* ── BACKGROUND PARTICLES ── */
+    #bg-canvas {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+    }
+
     /* ── HEADER ── */
     header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(5,13,26,.92);
-      backdrop-filter: blur(16px);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(2, 6, 23, 0.94);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      padding: 16px 32px;
+      padding: 0 40px;
+      height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
     }
+
     .back-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 8px;
       color: var(--accent);
       text-decoration: none;
-      font-size: .875rem;
-      font-weight: 500;
-      transition: opacity .2s;
+      font-size: .82rem; font-weight: 600;
+      padding: 8px 18px;
+      border: 1px solid var(--border-accent);
+      border-radius: 30px;
+      background: rgba(56,189,248,.06);
+      transition: .3s;
     }
-    .back-btn:hover { opacity: .75; }
-    .header-badge {
-      background: rgba(14,116,144,.2);
-      border: 1px solid var(--border);
-      color: var(--accent);
-      font-size: .72rem;
-      font-weight: 600;
-      letter-spacing: .06em;
-      padding: 4px 12px;
-      border-radius: 20px;
-    }
+    .back-btn:hover { background: rgba(56,189,248,.14); transform: translateX(-3px); }
 
-    /* ── HERO ── */
-    .hero {
-      padding: 72px 32px 48px;
-      max-width: 960px;
-      margin: 0 auto;
-      text-align: center;
+    .header-center {
+      display: flex; align-items: center; gap: 10px;
     }
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(14,116,144,.18);
-      border: 1px solid var(--border);
-      color: var(--accent);
-      font-size: .75rem;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      padding: 6px 16px;
-      border-radius: 20px;
-      margin-bottom: 24px;
-    }
-    .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, #fff 40%, var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .header-center .logo-text {
+      font-size: 1rem; font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .hero p {
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.7;
-      max-width: 640px;
-      margin: 0 auto 36px;
+    .header-status {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(52,211,153,.08);
+      border: 1px solid rgba(52,211,153,.25);
+      color: var(--accent3);
+      padding: 5px 14px; border-radius: 20px;
+      font-size: .72rem; font-weight: 700;
     }
-    .hero-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent3);
+      animation: blink 1.5s infinite;
     }
-    .tech-pill {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      color: #94a3b8;
-      font-size: .75rem;
-      font-weight: 500;
-      padding: 5px 14px;
-      border-radius: 20px;
-    }
+    @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
 
-    /* ── PREVIEW SCREENSHOT ── */
-    .screenshot-wrap {
-      max-width: 900px;
-      margin: 0 auto 64px;
-      padding: 0 32px;
-    }
-    .screenshot-frame {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(103,232,249,.08);
-    }
-    .frame-bar {
+    .header-clock {
+      font-size: .8rem; font-weight: 600;
+      color: var(--muted); font-family: 'Courier New', monospace;
       background: rgba(255,255,255,.04);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot-r { background: #ef4444; }
-    .dot-y { background: #eab308; }
-    .dot-g { background: #22c55e; }
-    .frame-title {
-      margin-left: 8px;
-      font-size: .72rem;
-      color: var(--muted);
-      font-family: monospace;
+      border: 1px solid var(--border);
+      padding: 5px 12px; border-radius: 8px;
     }
 
-    /* Preview UI simulado do sistema */
-    .sys-ui {
-      padding: 20px;
+    /* ── LAYOUT ── */
+    .shell {
+      position: relative; z-index: 1;
       display: grid;
       grid-template-columns: 220px 1fr;
-      gap: 16px;
-      min-height: 320px;
-      background: #07111f;
-    }
-    .sys-sidebar {
-      background: rgba(14,116,144,.08);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .sys-sidebar-title {
-      font-size: .65rem;
-      font-weight: 700;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 8px;
-      padding-left: 4px;
-    }
-    .sys-menu-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 7px;
-      font-size: .75rem;
-      color: #94a3b8;
-      cursor: default;
-      transition: background .2s;
-    }
-    .sys-menu-item.active {
-      background: rgba(14,116,144,.25);
-      border: 1px solid rgba(103,232,249,.2);
-      color: var(--accent);
-    }
-    .sys-content {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .sys-topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255,255,255,.03);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-    }
-    .sys-topbar span { font-size: .72rem; color: var(--muted); font-family: monospace; }
-    .sys-topbar strong { color: var(--accent); font-size: .75rem; }
-    .sys-cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-    .sys-card {
-      background: rgba(14,116,144,.1);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-    }
-    .sys-card label {
-      font-size: .6rem;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 4px;
-    }
-    .sys-card .val {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--accent);
-      font-family: monospace;
-    }
-    .sys-card .sub {
-      font-size: .6rem;
-      color: #475569;
-      margin-top: 2px;
-    }
-    .sys-table {
-      background: rgba(255,255,255,.02);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      flex: 1;
-    }
-    .sys-table-head {
-      display: grid;
-      grid-template-columns: 60px 1fr 90px 80px 70px;
-      background: rgba(14,116,144,.15);
-      border-bottom: 1px solid var(--border);
-      padding: 8px 12px;
-      gap: 8px;
-    }
-    .sys-table-head span {
-      font-size: .6rem;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-    .sys-table-row {
-      display: grid;
-      grid-template-columns: 60px 1fr 90px 80px 70px;
-      padding: 8px 12px;
-      gap: 8px;
-      border-bottom: 1px solid rgba(255,255,255,.04);
-    }
-    .sys-table-row span {
-      font-size: .68rem;
-      color: #94a3b8;
-      font-family: monospace;
-    }
-    .badge-ok {
-      background: rgba(34,197,94,.15);
-      color: #4ade80;
-      border-radius: 4px;
-      padding: 1px 6px;
-      font-size: .6rem;
-      font-weight: 600;
-      display: inline-block;
+      min-height: calc(100vh - 64px);
     }
 
-    /* ── FEATURES ── */
-    .section {
-      max-width: 960px;
-      margin: 0 auto 64px;
-      padding: 0 32px;
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: rgba(10, 22, 40, 0.9);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid var(--border);
+      padding: 28px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
     }
-    .section-label {
-      font-size: .72rem;
-      font-weight: 700;
-      letter-spacing: .1em;
-      text-transform: uppercase;
+
+    .sidebar-section-title {
+      font-size: .62rem; font-weight: 800; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--muted);
+      padding: 0 10px; margin: 12px 0 6px;
+    }
+    .sidebar-section-title:first-child { margin-top: 0; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      font-size: .8rem; font-weight: 500;
+      color: var(--muted); cursor: pointer;
+      transition: .2s; border: 1px solid transparent;
+      user-select: none;
+    }
+    .nav-item i { width: 16px; text-align: center; }
+    .nav-item:hover { background: rgba(56,189,248,.06); color: var(--text); }
+    .nav-item.active {
+      background: rgba(56,189,248,.1);
+      border-color: var(--border-accent);
+      color: var(--accent); font-weight: 700;
+    }
+    .nav-item .nav-badge {
+      margin-left: auto;
+      background: rgba(56,189,248,.15);
       color: var(--accent);
-      margin-bottom: 12px;
+      border-radius: 20px;
+      padding: 1px 7px;
+      font-size: .62rem; font-weight: 800;
     }
-    .section h2 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 32px;
+    .nav-item.warn .nav-badge { background: rgba(251,191,36,.15); color: var(--warning); }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 14px 10px;
+      border-top: 1px solid var(--border);
+      font-size: .72rem; color: var(--muted);
+      display: flex; align-items: center; gap: 8px;
     }
-    .features-grid {
+
+    /* ── MAIN ── */
+    .main-content {
+      padding: 32px 36px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-hd {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .page-hd h1 {
+      font-size: 1.6rem; font-weight: 800; letter-spacing: -.5px;
+      background: linear-gradient(135deg, var(--text) 40%, var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-hd p { color: var(--muted); font-size: .82rem; margin-top: 4px; }
+    .page-hd-right {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .btn-action {
+      display: flex; align-items: center; gap: 7px;
+      padding: 9px 18px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #000; font-weight: 700; font-size: .78rem;
+      border: none; border-radius: 20px; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: .3s; white-space: nowrap;
+    }
+    .btn-action:hover { box-shadow: 0 0 20px rgba(56,189,248,.4); transform: translateY(-2px); }
+    .btn-action.green { background: linear-gradient(135deg, var(--accent3), var(--accent)); }
+
+    /* ── KPI ROW ── */
+    .kpi-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 16px;
     }
+
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 20px;
+      backdrop-filter: blur(12px);
+      transition: .4s; position: relative; overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--kpi-accent, var(--accent)), transparent);
+      opacity: 0; transition: .4s;
+    }
+    .kpi-card:hover { transform: translateY(-5px); border-color: rgba(56,189,248,.3); box-shadow: 0 20px 50px rgba(0,0,0,.4); }
+    .kpi-card:hover::before { opacity: 1; }
+
+    .kpi-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .kpi-icon-wrap {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      background: rgba(56,189,248,.1);
+      border: 1px solid rgba(56,189,248,.2);
+    }
+    .kpi-icon-wrap.green { background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.2); }
+    .kpi-icon-wrap.purple { background: rgba(129,140,248,.1); border-color: rgba(129,140,248,.2); }
+    .kpi-icon-wrap.warn { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.2); }
+
+    .kpi-trend {
+      font-size: .68rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .trend-up { background: rgba(52,211,153,.12); color: var(--accent3); }
+    .trend-dn { background: rgba(244,63,94,.12); color: var(--danger); }
+
+    .kpi-value {
+      font-size: 2rem; font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent); margin-bottom: 4px;
+      line-height: 1;
+    }
+    .kpi-value.green { color: var(--accent3); }
+    .kpi-value.purple { color: var(--accent2); }
+    .kpi-value.warn { color: var(--warning); }
+
+    .kpi-label { font-size: .7rem; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
+    .kpi-sub { font-size: .7rem; color: var(--muted); margin-top: 6px; }
+
+    /* ── CHARTS ROW ── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 20px;
+    }
+
+    .glass-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+      transition: .4s; position: relative;
+    }
+    .glass-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0; transition: .4s;
+    }
+    .glass-card:hover::before { opacity: 1; }
+    .glass-card:hover { border-color: rgba(56,189,248,.25); }
+
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 0;
+    }
+    .card-header h3 { font-size: .9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .card-header h3 span { font-size: .7rem; color: var(--muted); font-weight: 400; }
+    .card-body { padding: 16px 24px 22px; }
+
+    .chart-wrap { position: relative; }
+
+    /* ── LIVE TABLE ── */
+    .table-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+    }
+
+    .table-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .table-hd h3 { font-size: .9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .live-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: .72rem; font-weight: 700;
+      background: rgba(52,211,153,.08);
+      border: 1px solid rgba(52,211,153,.2);
+      color: var(--accent3);
+      padding: 4px 10px; border-radius: 20px;
+    }
+
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead th {
+      font-size: .62rem; font-weight: 800; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--muted);
+      padding: 12px 24px; text-align: left;
+      background: rgba(255,255,255,.02);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table tbody td {
+      font-size: .8rem; color: var(--muted);
+      padding: 13px 24px;
+      border-bottom: 1px solid rgba(255,255,255,.03);
+      font-family: 'Courier New', monospace;
+    }
+    .data-table tbody td:first-child,
+    .data-table tbody td:nth-child(2) {
+      font-family: 'Inter', sans-serif;
+    }
+    .data-table tbody td:nth-child(2) { color: var(--text); font-weight: 600; }
+    .data-table tbody tr {
+      transition: background .2s;
+    }
+    .data-table tbody tr:hover { background: rgba(56,189,248,.04); }
+    .data-table tbody tr.new-row {
+      animation: rowIn .5s ease forwards;
+    }
+    @keyframes rowIn {
+      from { opacity: 0; transform: translateX(-8px); background: rgba(56,189,248,.1); }
+      to   { opacity: 1; transform: translateX(0); background: transparent; }
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px; border-radius: 6px;
+      font-size: .62rem; font-weight: 700; font-family: 'Inter', sans-serif;
+    }
+    .badge-ok { background: rgba(52,211,153,.12); color: var(--accent3); border: 1px solid rgba(52,211,153,.25); }
+    .badge-warn { background: rgba(251,191,36,.12); color: var(--warning); border: 1px solid rgba(251,191,36,.25); }
+    .badge-err { background: rgba(244,63,94,.12); color: var(--danger); border: 1px solid rgba(244,63,94,.25); }
+
+    /* ── FEATURES GRID ── */
+    .features-section { }
+    .section-hd { text-align: center; margin-bottom: 36px; }
+    .section-tag {
+      display: inline-block;
+      padding: 5px 14px; border: 1px solid rgba(56,189,248,.3);
+      border-radius: 20px; font-size: .72rem; font-weight: 700;
+      color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(56,189,248,.05); margin-bottom: 12px;
+    }
+    .section-hd h2 { font-size: 1.6rem; font-weight: 800; }
+    .section-hd p { color: var(--muted); font-size: .88rem; margin-top: 8px; }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
     .feature-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      transition: border-color .2s, transform .2s;
+      border-radius: 18px;
+      padding: 26px;
+      transition: .4s; position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--fcard-accent, var(--accent)), transparent);
+      opacity: 0; transition: .4s;
     }
     .feature-card:hover {
-      border-color: rgba(103,232,249,.35);
-      transform: translateY(-3px);
+      transform: translateY(-5px);
+      border-color: rgba(56,189,248,.3);
+      box-shadow: 0 20px 50px rgba(0,0,0,.4);
     }
-    .feature-icon {
-      font-size: 1.8rem;
-      margin-bottom: 14px;
-    }
-    .feature-card h3 {
-      font-size: .95rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .feature-card p {
-      font-size: .82rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
+    .feature-card:hover::before { opacity: 1; }
 
-    /* ── STATS ── */
+    .feature-icon-wrap {
+      width: 46px; height: 46px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.2);
+      margin-bottom: 16px;
+    }
+    .feature-icon-wrap.g { background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.2); }
+    .feature-icon-wrap.p { background: rgba(129,140,248,.1); border-color: rgba(129,140,248,.2); }
+
+    .feature-card h3 { font-size: .9rem; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { font-size: .8rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── STATS ROW ── */
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 16px;
-      margin-bottom: 64px;
     }
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 28px 24px;
+      border-radius: 18px;
+      padding: 28px 22px;
       text-align: center;
+      backdrop-filter: blur(12px);
     }
-    .stat-card .num {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: var(--accent);
-      display: block;
-      margin-bottom: 6px;
+    .stat-num {
+      font-size: 2.2rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block; margin-bottom: 6px;
     }
-    .stat-card .desc {
-      font-size: .78rem;
-      color: var(--muted);
+    .stat-desc { font-size: .75rem; color: var(--muted); }
+
+    /* ── ALERT BANNER ── */
+    .alert-banner {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(251,191,36,.06);
+      border: 1px solid rgba(251,191,36,.25);
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: .82rem;
     }
+    .alert-icon { font-size: 1.1rem; }
+    .alert-text { flex: 1; }
+    .alert-text strong { color: var(--warning); }
+    .alert-text span { color: var(--muted); }
+    .alert-dismiss {
+      background: rgba(251,191,36,.1);
+      border: 1px solid rgba(251,191,36,.2);
+      color: var(--warning);
+      padding: 5px 12px; border-radius: 8px;
+      font-size: .72rem; font-weight: 700;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: .2s;
+    }
+    .alert-dismiss:hover { background: rgba(251,191,36,.2); }
 
     /* ── FOOTER ── */
     footer {
+      position: relative; z-index: 1;
       border-top: 1px solid var(--border);
-      padding: 32px;
-      text-align: center;
-      color: var(--muted);
-      font-size: .82rem;
+      padding: 24px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
     }
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
+    .footer-logo {
+      font-weight: 800; font-size: .9rem;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
+    footer p { font-size: .75rem; color: var(--muted); }
+    footer a { color: var(--accent); text-decoration: none; }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
-      header { padding: 12px 16px; }
-      .hero { padding: 48px 16px 32px; }
-      .screenshot-wrap, .section { padding: 0 16px; }
-      .sys-ui { grid-template-columns: 1fr; }
-      .sys-sidebar { display: none; }
-      .sys-cards { grid-template-columns: repeat(2, 1fr); }
-      .sys-table-head, .sys-table-row {
-        grid-template-columns: 50px 1fr 70px;
-      }
-      .sys-table-head span:nth-child(n+4),
-      .sys-table-row span:nth-child(n+4) { display: none; }
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .charts-row { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .main-content { padding: 20px 16px 48px; }
+      header { padding: 0 16px; }
+    }
+    @media (max-width: 540px) {
+      .kpi-row { grid-template-columns: 1fr 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .page-hd-right { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- ── HEADER ── -->
   <header>
-    <a href="https://paulomarques3162-pixel.github.io/meu-site/" class="back-btn"></a>
-      <i class="fa-solid fa-arrow-left"></i> Voltar ao Portfólio
+    <a href="https://paulomarques3162-pixel.github.io/meu-site/" class="back-btn">
+      <i class="fa-solid fa-arrow-left"></i> Portfólio
     </a>
-    <span class="header-badge">⚙️ Sistema Industrial</span>
+    <div class="header-center">
+      <span class="logo-text">⚙️ Sistema Industrial</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="header-status">
+        <div class="status-dot"></div>
+        Sistema Ativo
+      </div>
+      <div class="header-clock" id="clock">--:--:--</div>
+    </div>
   </header>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-tag">⚙️ Projeto Industrial</div>
-    <h1>Sistema de Controle<br>Industrial</h1>
-    <p>Software desktop para controle e monitoramento industrial com registro de pesagens, lotes, validades e emissão de tickets em tempo real.</p>
-    <div class="hero-tags">
-      <span class="tech-pill">Desktop App</span>
-      <span class="tech-pill">Banco de Dados</span>
-      <span class="tech-pill">Automação</span>
-      <span class="tech-pill">Relatórios</span>
-      <span class="tech-pill">Impressão de Tickets</span>
-    </div>
-  </section>
+  <!-- ── SHELL ── -->
+  <div class="shell">
 
-  <!-- SCREENSHOT -->
-  <div class="screenshot-wrap">
-    <div class="screenshot-frame">
-      <div class="frame-bar">
-        <div class="dot dot-r"></div>
-        <div class="dot dot-y"></div>
-        <div class="dot dot-g"></div>
-        <span class="frame-title">Sistema Industrial — v2.0 · Mantius</span>
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+      <div class="sidebar-section-title">Operações</div>
+      <div class="nav-item active" onclick="setNav(this)">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
       </div>
-      <!-- UI simulada do sistema -->
-      <div class="sys-ui">
-        <!-- Sidebar -->
-        <div class="sys-sidebar">
-          <div class="sys-sidebar-title">📋 Menu</div>
-          <div class="sys-menu-item active"><i class="fa-solid fa-weight-scale"></i> Pesagens</div>
-          <div class="sys-menu-item"><i class="fa-solid fa-box"></i> Lotes</div>
-          <div class="sys-menu-item"><i class="fa-solid fa-receipt"></i> Tickets</div>
-          <div class="sys-menu-item"><i class="fa-solid fa-chart-bar"></i> Relatórios</div>
-          <div class="sys-menu-item"><i class="fa-solid fa-gear"></i> Configurações</div>
+      <div class="nav-item" onclick="setNav(this)">
+        <i class="fa-solid fa-weight-scale"></i> Pesagens
+        <span class="nav-badge">137</span>
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <i class="fa-solid fa-boxes-stacked"></i> Lotes
+        <span class="nav-badge">42</span>
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <i class="fa-solid fa-receipt"></i> Tickets
+      </div>
+
+      <div class="sidebar-section-title">Análise</div>
+      <div class="nav-item" onclick="setNav(this)">
+        <i class="fa-solid fa-chart-line"></i> Relatórios
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <i class="fa-solid fa-triangle-exclamation"></i> Alertas
+        <span class="nav-badge warn">2</span>
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <i class="fa-solid fa-calendar-days"></i> Histórico
+      </div>
+
+      <div class="sidebar-section-title">Configuração</div>
+      <div class="nav-item" onclick="setNav(this)">
+        <i class="fa-solid fa-sliders"></i> Parâmetros
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <i class="fa-solid fa-users-gear"></i> Operadores
+      </div>
+      <div class="nav-item" onclick="setNav(this)">
+        <i class="fa-solid fa-gear"></i> Configurações
+      </div>
+
+      <div class="sidebar-footer">
+        <i class="fa-solid fa-circle-user"></i>
+        Operador: <strong style="color:var(--text)">Admin</strong>
+      </div>
+    </aside>
+
+    <!-- ── MAIN CONTENT ── -->
+    <main class="main-content">
+
+      <!-- Alert Banner -->
+      <div class="alert-banner" id="alertBanner">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-text">
+          <strong>Atenção:</strong>
+          <span> Lote #0038 com validade em 3 dias — verifique uso imediato.</span>
         </div>
-        <!-- Conteúdo -->
-        <div class="sys-content">
-          <div class="sys-topbar">
-            <span>Linha: <strong>Linha 3</strong></span>
-            <span>🟢 Sistema Ativo</span>
-            <span>27/04/2026 — <strong>14:32</strong></span>
-          </div>
-          <div class="sys-cards">
-            <div class="sys-card">
-              <label>Pesagem Atual</label>
-              <div class="val">25.340 kg</div>
-              <div class="sub">Linha 3 · Ativo</div>
-            </div>
-            <div class="sys-card">
-              <label>Lote Atual</label>
-              <div class="val">#0042</div>
-              <div class="sub">Val: 12/2025</div>
-            </div>
-            <div class="sys-card">
-              <label>Tickets Hoje</label>
-              <div class="val">137</div>
-              <div class="sub">Último: #7891</div>
-            </div>
-          </div>
-          <div class="sys-table">
-            <div class="sys-table-head">
-              <span>Ticket</span>
-              <span>Produto</span>
-              <span>Peso</span>
-              <span>Lote</span>
-              <span>Status</span>
-            </div>
-            <div class="sys-table-row">
-              <span>#7891</span><span>Farinha Tipo A</span><span>25.340 kg</span><span>#0042</span><span><span class="badge-ok">✔ OK</span></span>
-            </div>
-            <div class="sys-table-row">
-              <span>#7890</span><span>Farinha Tipo B</span><span>24.980 kg</span><span>#0041</span><span><span class="badge-ok">✔ OK</span></span>
-            </div>
-            <div class="sys-table-row">
-              <span>#7889</span><span>Açúcar Cristal</span><span>50.120 kg</span><span>#0040</span><span><span class="badge-ok">✔ OK</span></span>
-            </div>
-            <div class="sys-table-row">
-              <span>#7888</span><span>Farinha Tipo A</span><span>25.010 kg</span><span>#0042</span><span><span class="badge-ok">✔ OK</span></span>
-            </div>
-          </div>
+        <button class="alert-dismiss" onclick="document.getElementById('alertBanner').style.display='none'">Dispensar</button>
+      </div>
+
+      <!-- Page Header -->
+      <div class="page-hd">
+        <div>
+          <h1>Dashboard Industrial</h1>
+          <p>Linha 3 · Monitoramento em tempo real · Turno A</p>
+        </div>
+        <div class="page-hd-right">
+          <button class="btn-action green">
+            <i class="fa-solid fa-print"></i> Emitir Ticket
+          </button>
+          <button class="btn-action">
+            <i class="fa-solid fa-download"></i> Exportar
+          </button>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- STATS -->
-  <div class="section">
-    <div class="stats-row">
-      <div class="stat-card"><span class="num">100%</span><span class="desc">Rastreabilidade de lotes</span></div>
-      <div class="stat-card"><span class="num">↓0</span><span class="desc">Erros de pesagem</span></div>
-      <div class="stat-card"><span class="num">Real‑time</span><span class="desc">Registro em tempo real</span></div>
-      <div class="stat-card"><span class="num">Auto</span><span class="desc">Impressão de tickets</span></div>
-    </div>
-  </div>
+      <!-- KPI Row -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-hd">
+            <div class="kpi-icon-wrap">⚖️</div>
+            <div class="kpi-trend trend-up">▲ +2.1%</div>
+          </div>
+          <div class="kpi-value" id="kpiPeso">0.000</div>
+          <div class="kpi-label">Pesagem Atual (kg)</div>
+          <div class="kpi-sub">Linha 3 · <span style="color:var(--accent3)">●</span> Ativo</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-hd">
+            <div class="kpi-icon-wrap green">📦</div>
+            <div class="kpi-trend trend-up">▲ Estável</div>
+          </div>
+          <div class="kpi-value green" id="kpiLote">#0042</div>
+          <div class="kpi-label">Lote Atual</div>
+          <div class="kpi-sub" id="kpiLoteVal">Val: 12/2025</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-hd">
+            <div class="kpi-icon-wrap purple">🧾</div>
+            <div class="kpi-trend trend-up">▲ +14%</div>
+          </div>
+          <div class="kpi-value purple" id="kpiTickets">137</div>
+          <div class="kpi-label">Tickets Emitidos Hoje</div>
+          <div class="kpi-sub">Último: <span style="color:var(--text)">#7891</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-hd">
+            <div class="kpi-icon-wrap warn">📊</div>
+            <div class="kpi-trend trend-up">▲ 98.4%</div>
+          </div>
+          <div class="kpi-value warn" id="kpiEfic">98.4%</div>
+          <div class="kpi-label">Eficiência da Linha</div>
+          <div class="kpi-sub">Meta: 95% · <span style="color:var(--accent3)">✔ Atingida</span></div>
+        </div>
+      </div>
 
-  <!-- FEATURES -->
-  <section class="section">
-    <div class="section-label">✦ Funcionalidades</div>
-    <h2>O que o sistema faz</h2>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">⚖️</div>
-        <h3>Registro de Pesagens</h3>
-        <p>Captura e armazena pesagens em tempo real diretamente da balança industrial, com data, hora e operador responsável.</p>
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <div class="glass-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-chart-area" style="color:var(--accent)"></i> Produção Horária <span>— pesagens (kg)</span></h3>
+            <div class="live-label"><div class="status-dot"></div>Ao Vivo</div>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrap" style="height:240px">
+              <canvas id="chartLinha"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-chart-pie" style="color:var(--accent2)"></i> Por Produto</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrap" style="height:240px">
+              <canvas id="chartProd"></canvas>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">📦</div>
-        <h3>Controle de Lotes</h3>
-        <p>Gerenciamento completo de lotes de produção com rastreabilidade, validade e vínculo automático a cada pesagem.</p>
+
+      <!-- Live Table -->
+      <div class="table-section">
+        <div class="table-hd">
+          <h3><i class="fa-solid fa-table-list" style="color:var(--accent)"></i> Registros em Tempo Real</h3>
+          <div class="live-label"><div class="status-dot"></div>Atualizando</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ticket</th>
+              <th>Produto</th>
+              <th>Peso (kg)</th>
+              <th>Lote</th>
+              <th>Operador</th>
+              <th>Horário</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="liveTable"></tbody>
+        </table>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">🧾</div>
-        <h3>Emissão de Tickets</h3>
-        <p>Geração e impressão automática de tickets com número de série, produto, peso, lote e data/hora para controle físico.</p>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-num">100%</span>
+          <div class="stat-desc">Rastreabilidade de lotes</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">↓0</span>
+          <div class="stat-desc">Erros de pesagem registrados</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">Real‑time</span>
+          <div class="stat-desc">Registro e sincronização</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">Auto</span>
+          <div class="stat-desc">Impressão automática de tickets</div>
+        </div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <h3>Relatórios</h3>
-        <p>Geração de relatórios por período, linha de produção, produto e operador para análise e auditoria.</p>
+
+      <!-- Features Grid -->
+      <div class="features-section">
+        <div class="section-hd">
+          <div class="section-tag">✦ Funcionalidades</div>
+          <h2>O que o Sistema faz</h2>
+          <p>Controle industrial completo, do chão de fábrica ao relatório gerencial.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon-wrap">⚖️</div>
+            <h3>Registro de Pesagens</h3>
+            <p>Captura pesagens em tempo real diretamente da balança industrial, com data, hora e operador responsável.</p>
+          </div>
+          <div class="feature-card" style="--fcard-accent:var(--accent3)">
+            <div class="feature-icon-wrap g">📦</div>
+            <h3>Controle de Lotes</h3>
+            <p>Gerenciamento completo com rastreabilidade, validade e vínculo automático a cada pesagem realizada.</p>
+          </div>
+          <div class="feature-card" style="--fcard-accent:var(--accent2)">
+            <div class="feature-icon-wrap p">🧾</div>
+            <h3>Emissão de Tickets</h3>
+            <p>Geração e impressão automática com número de série, produto, peso, lote e data/hora.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrap">📊</div>
+            <h3>Relatórios</h3>
+            <p>Geração por período, linha de produção, produto e operador para análise e auditoria completa.</p>
+          </div>
+          <div class="feature-card" style="--fcard-accent:var(--warning)">
+            <div class="feature-icon-wrap warn" style="background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.2)">🔔</div>
+            <h3>Alertas de Validade</h3>
+            <p>Notificações automáticas para lotes com validade próxima, evitando uso de produtos vencidos.</p>
+          </div>
+          <div class="feature-card" style="--fcard-accent:var(--accent3)">
+            <div class="feature-icon-wrap g">🗄️</div>
+            <h3>Banco de Dados Local</h3>
+            <p>Armazenamento seguro com backup automático, histórico completo e exportação de registros.</p>
+          </div>
+        </div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔔</div>
-        <h3>Alertas de Validade</h3>
-        <p>Sistema de notificações automáticas para lotes com validade próxima, evitando uso de produtos vencidos.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🗄️</div>
-        <h3>Banco de Dados Local</h3>
-        <p>Armazenamento seguro e persistente de todos os registros, com backup automático e histórico completo.</p>
-      </div>
-    </div>
-  </section>
+
+    </main>
+  </div>
 
   <!-- FOOTER -->
   <footer>
-    <p>Projeto de <a href="../index.html">Paulo Marques</a> · Desenvolvedor Front-End &amp; Sistemas</p>
+    <div class="footer-logo">PM · Sistema Industrial</div>
+    <p>Desenvolvido por <a href="https://paulomarques3162-pixel.github.io/meu-site/">Paulo Marques</a> — Desenvolvedor Front-End &amp; Sistemas</p>
+    <p style="font-size:.72rem">v2.0 · Mantius · 2025</p>
   </footer>
 
+  <script>
+    /* ── BACKGROUND PARTICLES ── */
+    const bgCanvas = document.getElementById('bg-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    let W, H, pts = [];
+
+    function resizeBg() {
+      W = bgCanvas.width = innerWidth;
+      H = bgCanvas.height = innerHeight;
+    }
+    window.addEventListener('resize', resizeBg);
+    resizeBg();
+
+    class Pt {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * W; this.y = Math.random() * H;
+        this.vx = (Math.random()-.5)*.3; this.vy = (Math.random()-.5)*.3;
+        this.a = Math.random()*.4+.05; this.r = Math.random()*1.2+.3;
+      }
+      update() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset(); }
+      draw() { bgCtx.beginPath(); bgCtx.arc(this.x,this.y,this.r,0,Math.PI*2); bgCtx.fillStyle=`rgba(56,189,248,${this.a})`; bgCtx.fill(); }
+    }
+    for(let i=0;i<60;i++) pts.push(new Pt());
+    (function loop(){ bgCtx.clearRect(0,0,W,H); pts.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(loop); })();
+
+    /* ── CLOCK ── */
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent =
+        now.toLocaleDateString('pt-BR') + ' · ' +
+        now.toLocaleTimeString('pt-BR');
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    /* ── SIDEBAR NAV ── */
+    function setNav(el) {
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    /* ── LIVE DATA SIMULATION ── */
+    const produtos = ['Farinha Tipo A','Farinha Tipo B','Açúcar Cristal','Sal Refinado','Amido de Milho'];
+    const operadores = ['Carlos M.','Ana R.','João P.','Mariana S.'];
+    let ticketCounter = 7891;
+    let loteCounter = 42;
+
+    function rndPeso() { return (Math.random()*30 + 15).toFixed(3); }
+
+    /* Initial table rows */
+    const initRows = [
+      { t:'#7891', p:'Farinha Tipo A', kg:'25.340', l:'#0042', op:'Carlos M.', h:'14:32', s:'ok' },
+      { t:'#7890', p:'Farinha Tipo B', kg:'24.980', l:'#0041', op:'Ana R.',    h:'14:28', s:'ok' },
+      { t:'#7889', p:'Açúcar Cristal', kg:'50.120', l:'#0040', op:'João P.',   h:'14:21', s:'ok' },
+      { t:'#7888', p:'Farinha Tipo A', kg:'25.010', l:'#0042', op:'Carlos M.', h:'14:15', s:'ok' },
+      { t:'#7887', p:'Sal Refinado',   kg:'20.880', l:'#0039', op:'Mariana S.',h:'14:07', s:'warn'},
+    ];
+
+    function statusBadge(s) {
+      if(s==='ok')   return '<span class="badge badge-ok">✔ OK</span>';
+      if(s==='warn') return '<span class="badge badge-warn">⚠ Atenção</span>';
+      return '<span class="badge badge-err">✖ Erro</span>';
+    }
+
+    function buildRow(r, isNew) {
+      const tr = document.createElement('tr');
+      if(isNew) tr.classList.add('new-row');
+      tr.innerHTML = `
+        <td>${r.t}</td>
+        <td>${r.p}</td>
+        <td>${r.kg}</td>
+        <td>${r.l}</td>
+        <td>${r.op}</td>
+        <td>${r.h}</td>
+        <td>${statusBadge(r.s)}</td>
+      `;
+      return tr;
+    }
+
+    const tbody = document.getElementById('liveTable');
+    initRows.forEach(r => tbody.appendChild(buildRow(r, false)));
+
+    /* Auto-insert new row every 4s */
+    let tickets = 137;
+    setInterval(() => {
+      ticketCounter++;
+      tickets++;
+      const now = new Date();
+      const h = now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      const newRow = {
+        t: '#'+ticketCounter,
+        p: produtos[Math.floor(Math.random()*produtos.length)],
+        kg: rndPeso(),
+        l: '#00'+loteCounter,
+        op: operadores[Math.floor(Math.random()*operadores.length)],
+        h, s: Math.random()>.08?'ok':'warn'
+      };
+      tbody.insertBefore(buildRow(newRow, true), tbody.firstChild);
+      if(tbody.children.length > 8) tbody.removeChild(tbody.lastChild);
+
+      document.getElementById('kpiTickets').textContent = tickets;
+      document.getElementById('kpiPeso').textContent = rndPeso();
+    }, 4000);
+
+    /* ── LINE CHART — Production over time ── */
+    const hours = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00'];
+    const prodData = [2180, 2450, 2310, 2780, 1900, 2560, 2340];
+
+    const chartLinha = new Chart(document.getElementById('chartLinha'), {
+      type: 'line',
+      data: {
+        labels: hours,
+        datasets: [{
+          data: prodData,
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56,189,248,.08)',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#38bdf8',
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          fill: true,
+          tension: 0.45,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(10,22,40,.95)',
+            borderColor: 'rgba(56,189,248,.3)',
+            borderWidth: 1,
+            titleColor: '#f8fafc',
+            bodyColor: '#94a3b8',
+            callbacks: { label: ctx => ' ' + ctx.parsed.y.toLocaleString('pt-BR') + ' kg' }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,.04)' },
+            ticks: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,.04)' },
+            ticks: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, callback: v => v.toLocaleString('pt-BR') }
+          }
+        }
+      }
+    });
+
+    /* Animate line chart live */
+    setInterval(() => {
+      chartLinha.data.datasets[0].data.shift();
+      chartLinha.data.datasets[0].data.push(Math.floor(2000 + Math.random()*800));
+      chartLinha.update('none');
+    }, 4000);
+
+    /* ── DONUT CHART — by product ── */
+    new Chart(document.getElementById('chartProd'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Farinha A','Farinha B','Açúcar','Sal','Amido'],
+        datasets: [{
+          data: [38, 22, 18, 12, 10],
+          backgroundColor: ['#38bdf8','#818cf8','#34d399','#fbbf24','#0ea5e9'],
+          borderWidth: 2, borderColor: '#0a1628',
+          hoverOffset: 8,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: {
+            display: true, position: 'bottom',
+            labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, padding: 12, boxWidth: 10, boxHeight: 10 }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(10,22,40,.95)',
+            borderColor: 'rgba(56,189,248,.3)', borderWidth: 1,
+            titleColor: '#f8fafc', bodyColor: '#94a3b8',
+            callbacks: { label: ctx => ' ' + ctx.parsed + '%' }
+          }
+        }
+      }
+    });
+
+    /* ── KPI PESO live update ── */
+    setInterval(() => {
+      document.getElementById('kpiPeso').textContent = rndPeso();
+      document.getElementById('kpiEfic').textContent = (97 + Math.random()*2).toFixed(1) + '%';
+    }, 2500);
+  </script>
 </body>
 </html>
